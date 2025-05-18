@@ -66,12 +66,14 @@
           <h3>Hasil Prediksi Produksi Padi</h3>
           <table>
             <tr>
-              <th>Prediksi Produksi (ton)</th>
+              <th>Prediksi Gradient Boosting (ton)</th>
+              <th>Prediksi Linear Regression (ton)</th>
               <th>Rata-rata Cluster (ton)</th>
               <th>Kategori</th>
             </tr>
             <tr>
-              <td>{{ prediction|round(2) }}</td>
+              <td>{{ prediction_gbr|round(2) }}</td>
+              <td>{{ prediction_lr|round(2) }}</td>
               <td>{{ avg_cluster_prod|round(2) }}</td>
               <td>{{ cluster_label }}</td>
             </tr>

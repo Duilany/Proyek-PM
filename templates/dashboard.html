@@ -13,64 +13,98 @@
       rel="stylesheet"
       href="{{ url_for('static', filename='style.css') }}"
     />
-    <style>
-      body {
-        background: url("{{ url_for('static', filename='image1.jpg') }}")
-          no-repeat center center fixed;
-        background-size: cover;
-      }
-      .intro-container {
-        background-color: rgba(255, 255, 255, 0.95);
-        padding: 30px;
-        border-radius: 15px;
-        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
-        max-width: 600px;
-        text-align: center;
-        margin: 50px auto;
-      }
-      .intro-container h1 {
-        font-size: 32px;
-        color: #2e86ab;
-        margin-bottom: 20px;
-      }
-      .intro-container p {
-        font-size: 16px;
-        color: #34495e;
-        margin-bottom: 15px;
-      }
-      .intro-container .btn {
-        background-color: #2e86ab;
-        color: white;
-        padding: 12px 25px;
-        border: none;
-        border-radius: 8px;
-        cursor: pointer;
-        font-weight: bold;
-        font-size: 16px;
-        text-decoration: none;
-        display: inline-block;
-        margin-top: 20px;
-        transition: background-color 0.3s ease;
-      }
-      .intro-container .btn:hover {
-        background-color: #21618c;
-      }
-    </style>
   </head>
   <body>
     <div class="intro-container">
       <h1>Prediksi Produksi Padi</h1>
       <p>
         Selamat datang di aplikasi prediksi produksi padi berbasis machine
-        learning! Aplikasi ini menggunakan model Random Forest untuk memprediksi
-        produktivitas padi di wilayah Sumatera berdasarkan faktor lingkungan
-        seperti luas panen, curah hujan, kelembapan, dan suhu rata-rata.
+        learning! Aplikasi ini menggunakan model Gradient Boosting Regressor dan
+        Linear Regression untuk memprediksi produktivitas padi di wilayah
+        Sumatera berdasarkan faktor lingkungan seperti luas panen, curah hujan,
+        kelembapan, dan suhu rata-rata, serta KMeans Clustering untuk
+        kategorisasi.
       </p>
-      <p>Model kami memiliki performa yang baik dengan:</p>
-      <p><strong>Mean Absolute Error (MAE):</strong> {{ mae|round(2) }}</p>
-      <p><strong>R² Score:</strong> {{ r2|round(2) }}</p>
+      <h3>Performa Model</h3>
+      <p><strong>Gradient Boosting Regressor:</strong></p>
+      <p>R² Score: {{ metrics['GradientBoosting']['r2']|round(2) }}</p>
+      <p>
+        Persentase Ketepatan Akurasi: {{
+        metrics['GradientBoosting']['accuracy_percentage']|round(2) }}%
+      </p>
+      <p><strong>Linear Regression:</strong></p>
+      <p>R² Score: {{ metrics['LinearRegression']['r2']|round(2) }}</p>
+      <p>
+        Persentase Ketepatan Akurasi: {{
+        metrics['LinearRegression']['accuracy_percentage']|round(2) }}%
+      </p>
       <p>Klik tombol di bawah untuk memulai prediksi.</p>
       <a href="{{ url_for('predict') }}" class="btn">Mulai Prediksi 🌾</a>
+
+      <div class="chart-container">
+        <h2>Analisis Residual Prediksi (Gradient Boosting)</h2>
+        <p>
+          Grafik ini menunjukkan selisih antara prediksi dan nilai aktual. Titik
+          yang mendekati garis nol menunjukkan prediksi yang akurat.
+        </p>
+        <canvas id="residualChart"></canvas>
+      </div>
     </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+      fetch('{{ url_for('static', filename='residual_data.json') }}')
+        .then(response => {
+          if (!response.ok) {
+            throw new Error('File residual_data.json tidak ditemukan atau kosong');
+          }
+          return response.json();
+        })
+        .then(data => {
+          if (data.length === 0) {
+            throw new Error('Data residual kosong');
+          }
+          const ctx = document.getElementById('residualChart').getContext('2d');
+          new Chart(ctx, {
+            type: 'scatter',
+            data: {
+              datasets: [{
+                label: 'Residual',
+                data: data,
+                backgroundColor: '#2e86ab',
+                pointRadius: 5
+              }]
+            },
+            options: {
+              scales: {
+                x: {
+                  title: { display: true, text: 'Produksi Aktual (ton)' },
+                  type: 'linear'
+                },
+                y: {
+                  title: { display: true, text: 'Residual (ton)' },
+                  beginAtZero: false
+                }
+              },
+              plugins: {
+                legend: { display: true },
+                tooltip: {
+                  callbacks: {
+                    label: function(context) {
+                      return `Aktual: ${context.raw.x.toFixed(2)} ton, Residual: ${context.raw.y.toFixed(2)} ton`;
+                    }
+                  }
+                }
+              }
+            }
+          });
+        })
+        .catch(error => {
+          console.error('Error memuat grafik residual:', error);
+          document.getElementById('residualChart').style.display = 'none';
+          const chartContainer = document.querySelector('.chart-container');
+          chartContainer.innerHTML += '<p style="color: red;">Gagal memuat grafik residual. Pastikan data uji tersedia.</p>';
+        });
+    </script>
   </body>
 </html>

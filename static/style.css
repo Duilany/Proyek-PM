@@ -6,22 +6,50 @@ body {
   display: flex;
   justify-content: center;
   align-items: flex-start;
-  background: #e0f7fa;
   overflow-x: hidden;
 }
 
-.container {
+/* Background untuk dashboard.html */
+body:has(.intro-container) {
+  background: url("image1.jpg") no-repeat center center fixed;
+  background-size: cover;
+}
+
+/* Background untuk index.html */
+body:has(.container) {
+  background: url("image2.jpg") no-repeat center center fixed;
+  background-size: cover;
+}
+
+.container,
+.intro-container {
   background-color: rgba(255, 255, 255, 0.95);
   padding: 20px;
   border-radius: 15px;
   box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
   width: 90%;
-  max-width: 450px;
+  max-width: 600px;
   text-align: center;
   position: relative;
   z-index: 2;
+  margin: 50px auto;
+}
+
+.chart-container {
   margin-top: 20px;
-  overflow: visible;
+  padding: 15px;
+  border-radius: 10px;
+  background-color: #eaf4f4;
+  border: 2px solid #3498db;
+}
+
+.intro-container {
+  padding: 20px;
+  text-align: center;
+  background-color: #f9f9f9;
+  border-radius: 10px;
+  margin: 20px auto;
+  max-width: 800px;
 }
 
 .logo {
@@ -65,7 +93,8 @@ input:focus {
   box-shadow: 0 0 5px rgba(46, 134, 171, 0.5);
 }
 
-button {
+button,
+.btn {
   background-color: #2e86ab;
   color: white;
   padding: 12px 25px;
@@ -74,11 +103,28 @@ button {
   cursor: pointer;
   font-weight: bold;
   font-size: 16px;
+  text-decoration: none;
+  display: inline-block;
   transition: background-color 0.3s ease;
 }
 
-button:hover {
+.btn {
+  display: inline-block;
+  padding: 10px 20px;
+  background-color: #3498db;
+  color: white;
+  text-decoration: none;
+  border-radius: 5px;
+  margin-top: 10px;
+}
+
+button:hover,
+.btn:hover {
   background-color: #21618c;
+}
+
+.btn:hover {
+  background-color: #2980b9;
 }
 
 .result {
@@ -150,10 +196,15 @@ th {
 
 /* Responsif */
 @media (max-width: 480px) {
-  .container {
+  .container,
+  .intro-container {
     width: 95%;
     padding: 15px;
-    margin: 10px;
+    margin: 10px auto;
+  }
+
+  .chart-container {
+    padding: 10px;
   }
 
   h1 {
@@ -175,7 +226,8 @@ th {
     font-size: 12px;
   }
 
-  button {
+  button,
+  .btn {
     padding: 10px 20px;
     font-size: 14px;
   }
@@ -186,7 +238,8 @@ th {
 }
 
 @media (max-width: 360px) {
-  .container {
+  .container,
+  .intro-container {
     padding: 10px;
   }
 
